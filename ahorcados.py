@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 
-
+''' ASCII art para el avance del juego'''
 IMAGES = ['''
 
     +---+
@@ -85,41 +85,55 @@ def random_word(WORD_LIST):
 
 
 def show_dashboar(hiden_word, tries):
-    ''' Show the dashboard'''
     print(IMAGES[tries])
     print(hiden_word)
         
-
+def end_game(word):
+    print('Perdiste el juego la palabra era {}'.format(word))
+    
+      
 
 
 def run():
     ''' Starts the game'''
     tries = 0
+    last_trie = len(IMAGES) 
     word = random_word(WORD_LIST)
     hiden_word = ['*-*'] * len(word)
-    non_alpha_type = 0
+    first_time_non_alpha_type = True
+    first_time_retype_letter = True
     
     while True:
         
         show_dashboar(hiden_word, tries)
         current_letter = (str(input('Dime una letra: '))).upper()
-        print(word)
+
+        if current_letter in hiden_word :
+            if first_time_retype_letter :
+                print('La letra {} ya la escribiste. de ahora en adelante contara como un error'.format(current_letter))
+                first_time_retype_letter = False
+            else:
+                tries += 1
+            
+            if tries == last_trie:
+                end_game(word)
+                break
 
 
-        if current_letter in word :
+        elif current_letter in word :
             print('la letra {} esta en la parabra'.format(current_letter))
             
-            idx_to_change = []
+            idx_to_change_in_hiden_word = []
             idx_in_word = 0
             
             for letter in word:
                 if letter == current_letter:
                     
-                    idx_to_change.append(idx_in_word)
-                    print(idx_to_change)
+                    idx_to_change_in_hiden_word.append(idx_in_word)
+                    print(idx_to_change_in_hiden_word)
                 idx_in_word += 1 
             
-            for idx in idx_to_change:
+            for idx in idx_to_change_in_hiden_word:
                 hiden_word[idx] = current_letter
             
             try:
@@ -129,22 +143,28 @@ def run():
                 print(' Fleicidades ganaste, la palabra es {}'.format(word))
                 break
         
-        elif current_letter.isalpha() :
-            if non_alpha_type == 0:
+        elif not current_letter.isalpha() :
+            if first_time_non_alpha_type :
                 print('Solo puedes usar letras, de ahora en adelante estos tambien contaran como errores')
-                non_alpha_type += 1
+                first_time_non_alpha_type = False
             else:
                 tries += 1
+            
+            if tries == last_trie  :
+                end_game(word)
+                break   
+            
+        
 
         else:
-            print('La letra {} NO esta en la palabra')
-            if tries < len(IMAGES) - 1:
-                tries += 1
-            else:
-                print('Perdiste .-.')
+            print('La letra {} NO esta en la palabra'.format(current_letter))
+            
+            tries += 1
+
+            if tries == last_trie :
+                end_game(word)
                 break            
 
-    #show_dashboar('hola', tries)
 
 if __name__ == '__main__':
 
